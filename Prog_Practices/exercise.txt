@@ -1,0 +1,6 @@
+Given an array A containing n <= 10K small integers <= 100K. 
+
+1.
+2.
+3.
+4.
