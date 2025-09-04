@@ -1,0 +1,50 @@
+Inner Over Results (pop=50, iters=20000, runs=30)
+
+EIL51
+  shortest: 2
+  median:   32.00
+  minimum:  2
+  std:      14.33
+
+EIL76
+  shortest: 1
+  median:   34.00
+  minimum:  1
+  std:      24.20
+
+EIL101
+  shortest: 0
+  median:   58.50
+  minimum:  0
+  std:      29.03
+
+ST70
+  shortest: 1
+  median:   27.00
+  minimum:  1
+  std:      18.21
+
+KROA100
+  shortest: 0
+  median:   49.50
+  minimum:  0
+  std:      30.03
+
+KROC100
+  shortest: 0
+  median:   57.00
+  minimum:  0
+  std:      29.14
+
+KROD100
+  shortest: 0
+  median:   57.00
+  minimum:  0
+  std:      29.14
+
+LIN105
+  shortest: 5
+  median:   47.50
+  minimum:  5
+  std:      29.06
+
