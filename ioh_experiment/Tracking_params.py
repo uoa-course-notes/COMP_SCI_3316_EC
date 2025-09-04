@@ -81,3 +81,6 @@ for run in range(runs):
     algorithm(p2) # run the algorithm on the problem
     p2.reset() # reset the problem for the next run
     algorithm.reset() # reset the algorithm for the next run
+
+
+    # https://iohprofiler.github.io/IOHexperimenter/python
