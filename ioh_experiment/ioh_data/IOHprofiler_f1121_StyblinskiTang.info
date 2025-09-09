@@ -1,0 +1,12 @@
+suite = "unknown_suite", funcId = 1121, funcName = "StyblinskiTang", DIM = 10, maximization = "F", algId = "algorithm_name", algInfo = "algorithm_info"
+%
+data_f1121_StyblinskiTang/IOHprofiler_f1121_DIM10.dat, 10:6|1226.15, 10:1|3260.47, 10:6|2280.75
+suite = "unknown_suite", funcId = 1121, funcName = "StyblinskiTang", DIM = 10, maximization = "F", algId = "algorithm_name", algInfo = "algorithm_info"
+%
+data_f1121_StyblinskiTang/IOHprofiler_f1121_DIM10.dat, 1:6|-123.22, 1:6|-96.0545, 1:3|-120.81
+suite = "unknown_suite", funcId = 1121, funcName = "StyblinskiTang", DIM = 2, maximization = "F", algId = "algorithm_name", algInfo = "algorithm_info"
+%
+data_f1121_StyblinskiTang/IOHprofiler_f1121_DIM2.dat, 1:5|-45.5281, 1:5|-78.3173, 1:3|-50.2323
+suite = "unknown_suite", funcId = 1121, funcName = "StyblinskiTang", DIM = 2, maximization = "F", algId = "algorithm_name", algInfo = "algorithm_info"
+%
+data_f1121_StyblinskiTang/IOHprofiler_f1121_DIM2.dat, 10:2|-35.8724, 10:6|-45.8454, 10:3|-12.5353

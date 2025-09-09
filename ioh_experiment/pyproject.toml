@@ -4,7 +4,19 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
+
+
+# Core dependencies for the project to run 
 dependencies = [
-    "ioh>=0.3.19",
-    "numpy>=2.2.6",
+    "ioh<=0.3.18", # <-- Use the last stable version before the yanked one
+    "numpy<2.0", # <-- Lock numpy to version 1.x, which is compatible
+]
+
+
+
+# optional dependencies for development 
+[project.optional-dependencies]
+dev = [
+    "ipykernel>=6.0.0", # needed for Jupyter kernels 
+    "ruff>=0.5.0",      # a great linter/formatter from the makers of uv 
 ]
