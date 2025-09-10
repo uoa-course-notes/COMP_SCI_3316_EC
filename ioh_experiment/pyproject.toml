@@ -3,13 +3,14 @@ name = "ioh-experiment"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 
 
 # Core dependencies for the project to run 
 dependencies = [
     "ioh<=0.3.18", # <-- Use the last stable version before the yanked one
     "numpy<2.0", # <-- Lock numpy to version 1.x, which is compatible
+    "pip>=25.2",
 ]
 
 
