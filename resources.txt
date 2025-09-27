@@ -1,0 +1,11 @@
+Overview:
+
+https://www.sciencedirect.com/topics/computer-science/simple-genetic-algorithm
+
+
+
+Contains implementation and step-by-step implementation of the SGA on different problems: 
+https://machinelearningmastery.com/simple-genetic-algorithm-from-scratch-in-python/
+
+
+
