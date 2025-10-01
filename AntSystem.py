@@ -64,10 +64,13 @@ class AntSystem:
                 else:
                     self.heuristic_etas[i][j] = 0.0
 
-
+    def compute_initial_Taus(self, c: Optional[float] = None):
+        if c is None:
+            c = 0.1  # default small constant value
+        self.pheromone_taus = np.full((self.tsp.size, self.tsp.size), c)
 
     # initialize pheromone levels to a small constant value
-    def compute_initial_pheromone_matrix(self, m: Optional[int] = None):
+    def compute_initial_pheromone_matrix(self, m: int):
         # m: number of ants
         if m is None:
             m = self.num_ants
@@ -170,7 +173,7 @@ if __name__ == "__main__":
     # Initialize AS 
     ant_system = AntSystem(tsp_instance, m=n)
     ant_system.initialize_heuristics_info_matrix()
-    ant_system.compute_initial_pheromone_matrix(c)
+    ant_system.compute_initial_Taus(c)
     Visibility_matrix: np.ndarray = ant_system.heuristic_etas
     # deposit initial pheromone trails to each edge 
     Pheromone_matrix: np.ndarray = ant_system.pheromone_taus
@@ -320,7 +323,7 @@ if __name__ == "__main__":
             
             NC += 1
             termination_condition = NC < NC_max and not is_stagnated(ant_system.pheromone_taus)
-            
+
             if termination_condition:
                 # empty all tabu lists
                 for tabu_k in Tabus:
