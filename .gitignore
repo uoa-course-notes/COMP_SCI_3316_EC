@@ -1,5 +1,9 @@
 final/doc/data
 
-# ignore all cache files in any directory 
-final/code/algorithms/__pycache__/
+# Python cache files and directories
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
 
