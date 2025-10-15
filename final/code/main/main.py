@@ -1,5 +1,9 @@
 import sys
 from pathlib import Path
+import time
+
+
+
 
 # Add the parent directory (code/) to the Python path to enable imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -21,8 +25,15 @@ def main():
     out_base = ensure_dir(Path(__file__).parent.parent.parent / "doc" / "data")
 
 
+    # based on the number of algorithms
+    # create an array of elapsed times, on for each experiment
+    elapsed_times = []
+
+
     for algorithm in config.ALGORITHMS:
         print(f"=========== Running experiments for algorithm: {algorithm.name} ========== ")
+        # start time 
+        start_time = time.process_time()
         # create a new experiment for the current algorithm 
         experiment = ioh.Experiment(
             algorithm=algorithm,
@@ -40,10 +51,19 @@ def main():
             zip_output=True, 
         )
 
+
         experiment.run()
+        end_time = time.process_time()
+        elapsed = end_time - start_time
+        elapsed_times.append(elapsed)
+        print(f"Elapsed time for algorithm {algorithm.name}: {elapsed:.2f} seconds after {config.REPETITIONS} runs on {len(config.PROBLEM_IDS)} problems.")
         print(f"=========== Completed experiments for algorithm: {algorithm.name} ========== ")
     print("All experiments completed.")
     print(f"Results are saved in the '{out_base}' directory.")
+
+    print("Summary of elapsed times for each algorithm:")
+    for alg, t in zip(config.ALGORITHMS, elapsed_times):
+        print(f"Total time for {alg.name}: {t:.2f} seconds")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,8 @@ class RandomSearch(Algorithm):
 
     def __call__(self, problem: ioh.problem.PBO): # this overrides the __call__ method in the Algorithm class
         for _ in range(self.budget):
+            if problem.state.optimum_found: # break early if optimum is found
+                break
             X: np.ndarray = np.random.randint(2, size=problem.meta_data.n_variables)
             problem(X.tolist())
 

@@ -13,18 +13,22 @@ class RandomizedLocalSearch(Algorithm):
 
 
         for _ in range(self.budget):
+            if problem.state.optimum_found: # break early if optimum is found
+                break
+
+
+
             # create a neighbor by flipping one random bit
-            neighbor = current_sol.copy()
             flip_index = np.random.randint(0, problem.meta_data.n_variables)
-            neighbor[flip_index] = 1 - neighbor[flip_index]  # Flip a random bit
-            neighbor_fitness = problem(neighbor.tolist())
-            
+            current_sol[flip_index] = 1 - current_sol[flip_index]  # Flip a random bit
+            neighbor_fitness = problem(current_sol.tolist())
 
-
-            
             # if the neighbor is better or equal, replace current solution
             if neighbor_fitness >= current_fitness:
-                current_sol, current_fitness = neighbor, neighbor_fitness
+                current_fitness = neighbor_fitness
+            else: 
+                # undo the flip 
+                current_sol[flip_index] = 1 - current_sol[flip_index]
 
 
 

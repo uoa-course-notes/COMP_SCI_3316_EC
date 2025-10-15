@@ -14,17 +14,26 @@ class OnePlusOneEA(Algorithm):
         current = np.random.randint(0, 2, size=n)
         current_fitness = problem(current.tolist())
         
-        
-        num_evaluations = 0
-        while num_evaluations < self.budget:
+        mutation_prob: float = 1/n
+
+
+        while problem.state.evaluations < self.budget:
+            if problem.state.optimum_found: # break early if optimum is found
+                break
+
+            mutation_mask = np.random.rand(n) < mutation_prob # vectorized mutation
+
+            # only flips when at least one bit is selected for mutation
+            if not mutation_mask.any():
+                continue
+            
+
+            # apply mutation in-place
             offspring = current.copy()
-            # flip n bits 
-            for i in range(n):
-                if np.random.rand() < 1/n:
-                    offspring[i] = 1 - offspring[i]
+            # flip chosen bits 
+            offspring[mutation_mask] = 1 - offspring[mutation_mask]
 
             offspring_fitness = problem(offspring.tolist())
-            num_evaluations += 1
 
             if offspring_fitness >= current_fitness:
                 current = offspring
