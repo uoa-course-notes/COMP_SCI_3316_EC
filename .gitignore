@@ -1,4 +1,7 @@
-final/doc/data
+# all data folder
+# final/doc/data
+**/data
+
 
 # Python cache files and directories
 __pycache__/
@@ -6,4 +9,5 @@ __pycache__/
 *$py.class
 *.pyc
 *.pyo
+
 

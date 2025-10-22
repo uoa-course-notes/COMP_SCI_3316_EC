@@ -8,6 +8,11 @@ from .MaxMinASStar import MaxMinASStar
 from .ACO import ACO
 
 
+# new 
+from .GSEMO import GSEMO
+from .FastGA import FastGA
+
+
 
 # Some comments: 
 # This file will make the "algorithms" directory a package and 

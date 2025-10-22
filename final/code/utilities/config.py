@@ -1,9 +1,16 @@
+# algorithms from assignment 2 (slightly modified)
 from algorithms import RandomSearch, RandomizedLocalSearch, MaxMinAS, DesignedGA, ACO, MaxMinASStar, OnePlusOneEA
+
+
+# New algorithms for assignment 3
+from algorithms import GSEMO, FastGA
+
+
 import math
 import ioh
 
 
-# configuration parameters for the experim  ents
+# configuration parameters for the experiments
 BUDGET = 10000   # maximum number of function evaluations per run (or number of iterations or generations for GAs)
 DIMENSION = 100   # problem dimension/size (e.g., number of bits for OneMax and LeadingOnes)
 # REPETITIONS = 10  # number of independent repetitions or runs for each problem
@@ -18,14 +25,14 @@ PROBLEM_IDS = [ # list of problems, identified by the following IDs, to be run i
     2201,
     2202,
     2203,
-    2300, # PackWhileTravel Problem
-    2301,
-    2302,
+    # 2300, # PackWhileTravel Problem
+    # 2301,
+    # 2302,
 ]
 # PROBLEMS_TYPE = ioh.ProblemClass.PBO  # Pseudo-Boolean Optimization problems
 PROBLEMS_TYPE = ioh.ProblemClass.GRAPH  # Graph problems
 
-# a list of algorithm instances to run 
+# a list of algorithm instances to run (for testing and for generating plots)
 ALGORITHMS = [
     # MaxMinASStar(budget=BUDGET, evaporate_rate=1),
     # MaxMinASStar(budget=BUDGET, evaporate_rate=1/math.sqrt(DIMENSION)),
@@ -33,9 +40,11 @@ ALGORITHMS = [
     # MaxMinAS(budget=BUDGET, evaporate_rate=1),
     # MaxMinAS(budget=BUDGET, evaporate_rate=1/math.sqrt(DIMENSION)),
     # MaxMinAS(budget=BUDGET, evaporate_rate=1/DIMENSION),
-    RandomSearch(budget=BUDGET),
-    OnePlusOneEA(budget=BUDGET),
-    RandomizedLocalSearch(budget=BUDGET),
-    DesignedGA(budget=BUDGET, population_size=44, mutation_rate=0.01),
+    # RandomSearch(budget=BUDGET),
+    # OnePlusOneEA(budget=BUDGET),
+    # RandomizedLocalSearch(budget=BUDGET),
+    # DesignedGA(budget=BUDGET, population_size=44, mutation_rate=0.01),
+    GSEMO(budget=BUDGET),
+    # FastGA(budget=BUDGET, beta=1.5),
     # ACO(budget=BUDGET)
 ]
