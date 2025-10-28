@@ -5,12 +5,11 @@ import numpy as np
 
 class SingleObjectiveEA(Algorithm):
     '''
-    Population-based Fast Genetic Algorithm with power-law mutation (β=1.5).
-    Designed for monotone submodular optimization problems with uniform constraints.
-    Includes constraint repair and diversity maintenance mechanisms.
+    Population-based Fast GA for monotone submodular graph problems.
+    Uses evaluation feedback to handle constraints, not structural assumptions.
     '''
     def __init__(self, budget: int, population_size: int = 20, beta: float = 1.5, 
-                tournament_size: int = 3):
+                 tournament_size: int = 3):
         super().__init__(budget, name="Fast GA", 
                         algorithm_info=f"Population-based Fast GA (pop={population_size}, β={beta})")
         self.population_size = population_size
@@ -62,12 +61,11 @@ class SingleObjectiveEA(Algorithm):
 
     def mutate(self, individual: np.ndarray, n: int) -> np.ndarray:
         '''
-        Power-law mutation: sample mutation strength from power-law distribution,
-        then flip that many random bits.
+        Power-law mutation: sample mutation strength and flip random bits.
         '''
         offspring = individual.copy()
         
-        # Sample number of bits to flip from power-law distribution
+        # Sample number of bits to flip
         num_flips = self.sample_mutation_strength(n)
         
         # Randomly select which bits to flip
@@ -80,154 +78,112 @@ class SingleObjectiveEA(Algorithm):
 
     # ==================== CONSTRAINT REPAIR ====================
     
-    def repair_solution(self, individual: np.ndarray, func) -> np.ndarray:
+    def repair_by_removal(self, individual: np.ndarray, func, max_attempts: int = 5) -> tuple:
         '''
-        Repair infeasible solution by greedily removing nodes.
-        Removes nodes until solution becomes feasible (positive fitness).
+        Repair infeasible solution by removing random 1s.
+        Returns (repaired_solution, fitness, num_repairs_used)
         '''
         solution = individual.copy()
         fitness = func(solution.tolist())
+        repairs_used = 0
         
-        # If already feasible, return as is
         if fitness >= 0:
-            return solution
+            return solution, fitness, 0
         
-        # Greedily remove nodes while infeasible
-        max_repairs = 10  # Limit repair iterations to avoid excessive evaluations
-        repairs = 0
-        
-        while fitness < 0 and func.state.evaluations < self.budget and repairs < max_repairs:
-            selected_indices = np.where(solution == 1)[0]
+        # Try removing nodes until feasible or max attempts reached
+        for attempt in range(max_attempts):
+            if func.state.evaluations >= self.budget or fitness >= 0:
+                break
             
-            if len(selected_indices) == 0:
-                break  # No nodes to remove
+            ones_positions = np.where(solution == 1)[0]
             
-            # Simple repair: randomly remove one node
-            # (Could be enhanced with marginal loss calculation)
-            remove_idx = np.random.choice(selected_indices)
-            solution[remove_idx] = 0
+            if len(ones_positions) == 0:
+                break  # No more nodes to remove
+            
+            # Remove 10-20% of selected nodes
+            num_to_remove = max(1, len(ones_positions) // 10)
+            remove_positions = np.random.choice(ones_positions, size=num_to_remove, replace=False)
+            solution[remove_positions] = 0
             
             fitness = func(solution.tolist())
-            repairs += 1
+            repairs_used += 1
         
-        return solution
+        return solution, fitness, repairs_used
 
     # ==================== SELECTION ====================
     
     def tournament_select(self, population: list, fitnesses: list) -> np.ndarray:
         '''
-        Select one individual via k-tournament selection.
-        Promotes better individuals while maintaining diversity.
+        Tournament selection with Deb's feasibility rules:
+        - Feasible (>=0) always beats infeasible (<0)
+        - Among feasible: higher fitness wins
+        - Among infeasible: higher fitness wins (less violation)
         '''
         tournament_indices = np.random.choice(
             len(population), 
             size=min(self.tournament_size, len(population)), 
             replace=False
         )
-        tournament_fitnesses = [fitnesses[i] for i in tournament_indices]
-        winner_idx = tournament_indices[np.argmax(tournament_fitnesses)]
+        
+        # Get fitnesses and separate by feasibility
+        tournament_fits = [fitnesses[i] for i in tournament_indices]
+        feasible_indices = [i for i, fit in enumerate(tournament_fits) if fit >= 0]
+        
+        if feasible_indices:
+            # At least one feasible: pick best feasible
+            best_local = max(feasible_indices, key=lambda i: tournament_fits[i])
+        else:
+            # All infeasible: pick least infeasible
+            best_local = np.argmax(tournament_fits)
+        
+        winner_idx = tournament_indices[best_local]
         return population[winner_idx].copy()
-
-    # ==================== DIVERSITY MAINTENANCE ====================
-    
-    def calculate_diversity(self, population: list) -> float:
-        '''
-        Calculate population diversity using average Hamming distance.
-        Higher values indicate more diverse population.
-        '''
-        if len(population) < 2:
-            return 0.0
-        
-        total_distance = 0.0
-        comparisons = 0
-        
-        for i in range(len(population)):
-            for j in range(i + 1, len(population)):
-                # Hamming distance: count differing bits
-                distance = np.sum(population[i] != population[j])
-                total_distance += distance
-                comparisons += 1
-        
-        return total_distance / comparisons if comparisons > 0 else 0.0
-
-    def diversity_selection(self, population: list, fitnesses: list, 
-                            target_size: int) -> tuple:
-        '''
-        Select individuals balancing fitness and diversity.
-        Uses fitness-based selection with diversity penalty for similar individuals.
-        '''
-        if len(population) <= target_size:
-            return population, fitnesses
-        
-        selected_pop = []
-        selected_fit = []
-        
-        # Always keep the best individual (elitism)
-        best_idx = np.argmax(fitnesses)
-        selected_pop.append(population[best_idx].copy())
-        selected_fit.append(fitnesses[best_idx])
-        
-        remaining_indices = list(range(len(population)))
-        remaining_indices.remove(best_idx)
-        
-        # Select remaining individuals with diversity consideration
-        while len(selected_pop) < target_size and remaining_indices:
-            best_score = -np.inf
-            best_idx_in_remaining = -1
-            
-            for idx in remaining_indices:
-                # Calculate diversity score: min distance to selected individuals
-                min_distance = min([
-                    np.sum(population[idx] != sel) 
-                    for sel in selected_pop
-                ])
-                
-                # Combined score: fitness + diversity bonus
-                diversity_bonus = min_distance / len(population[idx]) * 0.1
-                score = fitnesses[idx] + diversity_bonus
-                
-                if score > best_score:
-                    best_score = score
-                    best_idx_in_remaining = idx
-            
-            if best_idx_in_remaining != -1:
-                selected_pop.append(population[best_idx_in_remaining].copy())
-                selected_fit.append(fitnesses[best_idx_in_remaining])
-                remaining_indices.remove(best_idx_in_remaining)
-            else:
-                break
-        
-        return selected_pop, selected_fit
 
     # ==================== MAIN ALGORITHM ====================
     
-    def run_optimization_loop(self, func: ioh.problem.GraphProblem):
+    def __call__(self, func: ioh.problem.PBO):
         n = func.meta_data.n_variables
         
         # Initialize power-law distribution
         self.power_law_distribution = self.compute_power_law_distribution(n)
         
-        # Initialize population randomly
-        population = [np.random.randint(0, 2, size=n) for _ in range(self.population_size)]
+        # Initialize population with SPARSE solutions (more likely to be feasible)
+        population = []
+        for _ in range(self.population_size):
+            individual = np.zeros(n, dtype=int)
+            # Start with 5-10% of nodes selected
+            num_ones = np.random.randint(max(1, n // 20), max(2, n // 10))
+            ones_positions = np.random.choice(n, size=num_ones, replace=False)
+            individual[ones_positions] = 1
+            population.append(individual)
         
         # Evaluate and repair initial population
         fitnesses = []
         for i in range(self.population_size):
+            if func.state.evaluations >= self.budget:
+                break
+            
+            # Evaluate
             fitness = func(population[i].tolist())
+            
+            # Repair if infeasible
             if fitness < 0:
-                population[i] = self.repair_solution(population[i], func)
-                fitness = func(population[i].tolist())
+                population[i], fitness, _ = self.repair_by_removal(population[i], func)
+            
             fitnesses.append(fitness)
         
         generation = 0
+        no_feasible_count = 0
         
         # Main evolutionary loop
         while func.state.evaluations < self.budget:
-            # Early termination if optimum found
             if func.state.optimum_found:
                 break
             
-            # Generate offspring population
+            # Track feasibility
+            num_feasible = sum(1 for f in fitnesses if f >= 0)
+            
+            # Generate offspring
             offspring_population = []
             offspring_fitnesses = []
             
@@ -235,36 +191,42 @@ class SingleObjectiveEA(Algorithm):
                 if func.state.evaluations >= self.budget:
                     break
                 
-                # Parent selection via tournament
+                # Select parent (prefers feasible solutions)
                 parent = self.tournament_select(population, fitnesses)
                 
-                # Generate offspring via power-law mutation
+                # Mutate
                 offspring = self.mutate(parent, n)
                 
-                # Evaluate offspring
+                # Evaluate
                 offspring_fitness = func(offspring.tolist())
                 
-                # Repair if infeasible
+                # Repair if infeasible (but only sometimes to save evaluations)
                 if offspring_fitness < 0:
-                    offspring = self.repair_solution(offspring, func)
-                    if func.state.evaluations < self.budget:
-                        offspring_fitness = func(offspring.tolist())
+                    # Repair with probability based on population feasibility
+                    repair_prob = 0.5 if num_feasible < self.population_size // 2 else 0.2
+                    
+                    if np.random.rand() < repair_prob and func.state.evaluations < self.budget - 50:
+                        offspring, offspring_fitness, _ = self.repair_by_removal(offspring, func, max_attempts=3)
                 
                 offspring_population.append(offspring)
                 offspring_fitnesses.append(offspring_fitness)
             
-            # Combine parent and offspring populations
-            combined_population = population + offspring_population
-            combined_fitnesses = fitnesses + offspring_fitnesses
+            # Survival selection: keep best from parents + offspring
+            combined_pop = population + offspring_population
+            combined_fit = fitnesses + offspring_fitnesses
             
-            # Diversity-aware survival selection
-            population, fitnesses = self.diversity_selection(
-                combined_population, 
-                combined_fitnesses, 
-                self.population_size
-            )
+            # Sort by fitness (feasible solutions first, then by fitness value)
+            def sort_key(idx):
+                f = combined_fit[idx]
+                if f >= 0:
+                    return (1, f)  # Feasible: priority 1, sort by fitness
+                else:
+                    return (0, f)  # Infeasible: priority 0, sort by least violation
+            
+            sorted_indices = sorted(range(len(combined_pop)), key=sort_key, reverse=True)
+            
+            # Keep top population_size
+            population = [combined_pop[i] for i in sorted_indices[:self.population_size]]
+            fitnesses = [combined_fit[i] for i in sorted_indices[:self.population_size]]
             
             generation += 1
-
-    def __call__(self, func: ioh.problem.PBO):
-        self.run_optimization_loop(func)
