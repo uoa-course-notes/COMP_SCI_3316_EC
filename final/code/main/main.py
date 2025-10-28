@@ -46,8 +46,8 @@ def main():
             problem_class=config.PROBLEMS_TYPE,  # Use the configured problem class # type: ignore
             old_logger=False,  # type: ignore
             output_directory=str(out_base),
-            # folder_name=f"ioh-data-{algorithm.name}-{algorithm.evaporation_rate}", ======= This is temp for MMAS family only
-            folder_name=f"ioh-data-{algorithm.name}",
+            folder_name=f"ioh-data-{algorithm.name}-pop_size-{algorithm.population_size}-max_influence", # for population-based algorithms (single objective and multi-objective), technically for our designed GA as well.
+            # folder_name=f"ioh-data-{algorithm.name}",
             zip_output=True, 
         )
 
@@ -56,7 +56,9 @@ def main():
         end_time = time.process_time()
         elapsed = end_time - start_time
         elapsed_times.append(elapsed)
-        print(f"Elapsed time for algorithm {algorithm.name}: {elapsed:.2f} seconds after {config.REPETITIONS} runs on {len(config.PROBLEM_IDS)} problems.")
+        # add minutes
+        elapsed_minutes = elapsed / 60
+        print(f"Elapsed time for algorithm {algorithm.name}: {elapsed:.2f} seconds (around {elapsed_minutes:.2f} minutes) after {config.REPETITIONS} runs on {len(config.PROBLEM_IDS)} problems.")
         print(f"=========== Completed experiments for algorithm: {algorithm.name} ========== ")
     print("All experiments completed.")
     print(f"Results are saved in the '{out_base}' directory.")

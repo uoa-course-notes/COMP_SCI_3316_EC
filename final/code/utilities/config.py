@@ -1,13 +1,27 @@
-# algorithms from assignment 2 (slightly modified)
-from algorithms import RandomSearch, RandomizedLocalSearch, MaxMinAS, DesignedGA, ACO, MaxMinASStar, OnePlusOneEA
-
-
-# New algorithms for assignment 3
-from algorithms import GSEMO, FastGA
-
-
-import math
+# import necessary module(s)
 import ioh
+
+from algorithms import (
+    # For exercise 1
+    RandomSearch,
+    OnePlusOneEA,
+    RandomizedLocalSearch,
+    DesignedGA,
+
+
+    # For exercise 2
+    GSEMO_Seth,
+
+    # For exercises 3 and 4
+    SingleObjectiveEA,
+    MultiObjectiveEA,
+)
+
+
+
+
+
+
 
 
 # configuration parameters for the experiments
@@ -17,34 +31,50 @@ DIMENSION = 100   # problem dimension/size (e.g., number of bits for OneMax and 
 REPETITIONS = 30  # number of independent repetitions or runs for each problem
 
 PROBLEM_IDS = [ # list of problems, identified by the following IDs, to be run in our experiment in `main.py`
-    2100, # MaxCoverage Problem
-    2101,
-    2102,
-    2103,
+    # 2100, # MaxCoverage Problem
+    # 2101,
+    # 2102,
+    # 2103,
+
     2200, # MaxInfluence Problem
     2201,
     2202,
     2203,
+
+
+    # ---- Not required for exercises 3 and 4 ----
     # 2300, # PackWhileTravel Problem
     # 2301,
-    # 2302,
+    # 2302
 ]
 # PROBLEMS_TYPE = ioh.ProblemClass.PBO  # Pseudo-Boolean Optimization problems
 PROBLEMS_TYPE = ioh.ProblemClass.GRAPH  # Graph problems
 
-# a list of algorithm instances to run (for testing and for generating plots)
+
+POPULATION_SIZES = [10, 20, 50]  # Different population sizes to experiment with for population-based algorithms
+
+# a list of algorithm instances to run 
 ALGORITHMS = [
-    # MaxMinASStar(budget=BUDGET, evaporate_rate=1),
-    # MaxMinASStar(budget=BUDGET, evaporate_rate=1/math.sqrt(DIMENSION)),
-    # MaxMinASStar(budget=BUDGET, evaporate_rate=1/DIMENSION),
-    # MaxMinAS(budget=BUDGET, evaporate_rate=1),
-    # MaxMinAS(budget=BUDGET, evaporate_rate=1/math.sqrt(DIMENSION)),
-    # MaxMinAS(budget=BUDGET, evaporate_rate=1/DIMENSION),
+    
     # RandomSearch(budget=BUDGET),
     # OnePlusOneEA(budget=BUDGET),
     # RandomizedLocalSearch(budget=BUDGET),
     # DesignedGA(budget=BUDGET, population_size=44, mutation_rate=0.01),
-    GSEMO(budget=BUDGET),
-    # FastGA(budget=BUDGET, beta=1.5),
     # ACO(budget=BUDGET)
+    # GSEMO_Seth(budget=BUDGET) 
+    
+    
+    # SingleObjectiveEA's runs (uncomment to test)
+    SingleObjectiveEA(budget=BUDGET, 
+                    population_size=POPULATION_SIZES[0],
+                    beta=1.5,
+                    tournament_size=3 # 2 or 3.
+                    ),
+    # SingleObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[1]),
+    # SingleObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[2]),
+
+    # MultiObjectiveEA's runs (uncomment to test)
+    # MultiObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[0]),
+    # MultiObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[1]),
+    # MultiObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[2]),
 ]

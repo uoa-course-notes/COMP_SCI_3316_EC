@@ -8,11 +8,14 @@ from .MaxMinASStar import MaxMinASStar
 from .ACO import ACO
 
 
-# new 
-from .GSEMO import GSEMO
+# new algorithms
+from .GSEMO_Seth import GSEMO_Seth
 from .FastGA import FastGA
+from .GSEMO_Tatiana import GSEMO 
 
 
+from .MultiObjectiveEA import MultiObjectiveEA
+from .SingleObjectiveEA import SingleObjectiveEA
 
 # Some comments: 
 # This file will make the "algorithms" directory a package and 

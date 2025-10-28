@@ -4,12 +4,12 @@ import numpy as np
 
 
 
-class GSEMO(Algorithm):
+class GSEMO_Seth(Algorithm):
     '''
     Global Simple Evolutionary Multi-Objective Optimizer (GSEMO) algorithm implementation.
     '''
     def __init__(self, budget: int,
-                 name: str = "GSEMO",
+                 name: str = "GSEMO_Seth",
                  algorithm_info: str = "Global Simple Evolutionary Multi-Objective Optimizer (GSEMO) algorithm implementation."):
         super().__init__(budget, name=name, algorithm_info=algorithm_info)
 
