@@ -51,7 +51,9 @@ PROBLEM_IDS = [ # list of problems, identified by the following IDs, to be run i
 PROBLEMS_TYPE = ioh.ProblemClass.GRAPH  # Graph problems
 
 
-POPULATION_SIZES = [10, 20, 50]  # Different population sizes to experiment with for population-based algorithms
+POPULATION_SIZES = [10, 
+                    20, 
+                    50]  # Different population sizes to experiment with for population-based algorithms
 
 # a list of algorithm instances to run 
 ALGORITHMS = [
@@ -72,8 +74,16 @@ ALGORITHMS = [
                     # constraint_budget=100,  # Cardinality constraint for MaxInfluence
                     # use_swap_mutation=False  # Constraint-preserving mutation
                     ),
-    # SingleObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[1]),
-    # SingleObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[2]),
+    # SingleObjectiveEA(budget=BUDGET, 
+    #                 population_size=POPULATION_SIZES[1],
+    #                 beta=1.5,
+    #                 tournament_size=4,  # 2 or 3.
+    #                 ),
+    # SingleObjectiveEA(budget=BUDGET, 
+    #                 population_size=POPULATION_SIZES[2],
+    #                 beta=1.5,
+    #                 tournament_size=10,  # 2 or 3.
+    #                 ),
 
     # MultiObjectiveEA's runs (uncomment to test)
     # MultiObjectiveEA(budget=BUDGET, population_size=POPULATION_SIZES[0]),
